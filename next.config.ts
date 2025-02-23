@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true, 
   },
+  distDir: 'out',
   basePath: '/WA-chat', 
   assetPrefix: '/WA-chat/',
 };
