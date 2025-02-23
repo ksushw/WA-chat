@@ -25,7 +25,7 @@ jobs:
       - name: Установка зависимостей
         run: npm install
 
-      - name: Сборка Next.js
+      - name: Сборка и экспорт Next.js
         run: npm run build
 
       - name: Создание .nojekyll
@@ -34,7 +34,7 @@ jobs:
       - name: Загрузка артефакта
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: out  # Убедись, что здесь именно `out`, а не `.next`
 
   deploy:
     runs-on: ubuntu-latest
