@@ -1,12 +1,6 @@
 "use client";
-import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { FormProvider, useForm } from "react-hook-form"
-import { Button } from "@/components/ui/button";
+// import {  useForm } from "react-hook-form"
 
-import type { AppProps } from "next/app";
 import { useState } from "react";
 // import AuthPage from "@/components/AuthPage";
 import AuthPage from "@/components/blocks/Auth";
@@ -15,13 +9,13 @@ import  Chat  from "@/components/blocks/Chat";
 
 export default function Home() {
 
-  const form = useForm({
-    defaultValues: { idInstance: "" },
-  });
+  // const form = useForm({
+  //   defaultValues: { idInstance: "" },
+  // });
 
-  const onSubmit = (data: any) => {
-    // console.log("Form Data:", data);
-  };
+  // const onSubmit = (data: any) => {
+  //   // console.log("Form Data:", data);
+  // };
   console.log('parentRerender');
 
   const [step, setStep] = useState<"login" | "contact" | "chat">("login");

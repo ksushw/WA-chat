@@ -17,15 +17,15 @@ export default function AuthPage({ nextStep }: { nextStep: () => void }) {
     defaultValues: { idInstance: '' },
   });
 
-  const onSubmit = (data: any) => {
-    console.log('Form Data:', data);
-  };
+  // const onSubmit = (data: any) => {
+  //   console.log('Form Data:', data);
+  // };
 
   return (
     <Card>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(() => {})} className="space-y-4">
             <FormField
               control={form.control}
               name="idInstance"
