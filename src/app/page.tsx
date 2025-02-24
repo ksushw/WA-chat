@@ -19,7 +19,7 @@ export default function Home() {
     if (idInstance && apiToken) {
       setStep('contact');
     }
-  }, []);
+  }, [idInstance, apiToken]);
 
   return (
     <div className="h-[100%] p-2 s:p-10 font-[family-name:var(--font-geist-sans)] bg-neutral-300">

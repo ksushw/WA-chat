@@ -2,14 +2,6 @@
 // import { ChatMessage } from '@/types/greenApi';
 
 type MessageType = 'incoming' | 'outgoing';
-
-type MessageContentType =
-  | 'textMessage'
-  | 'imageMessage'
-  | 'videoMessage'
-  | 'audioMessage'
-  | 'documentMessage'
-    | 'extendedTextMessage';
   
 export interface Message {
   chatId: string;
