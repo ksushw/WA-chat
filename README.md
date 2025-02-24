@@ -18,7 +18,7 @@
 ### 1. Клонирование репозитория  
 ```sh  
 git clone https://github.com/WA-chat.git  
-cd ТВОЙ-РЕПО  
+cd WA-chat  
 ```
   
 ### 2. Установка зависимостей  
