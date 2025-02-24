@@ -19,15 +19,14 @@ export default function Chat({ prevStep }: { prevStep: () => void }) {
     '/audio/multi-pop-2-188167.mp3'
   );
 
-  // Отправка сообщений
-  const handleSend = async () => {
+  const handleSend = async (newMessage: string) => {
     if (!message.trim()) return;
     console.log(message);
-    const idMessage = await sendMessage(chatId, message);
+    const idMessage = await sendMessage(chatId, newMessage);
     if (idMessage) {
       state.addMessage({
         chatId,
-        idMessage: idMessage,
+        idMessage: newMessage,
         isDeleted: false,
         isEdited: false,
         senderContactName: '',
@@ -76,43 +75,46 @@ export default function Chat({ prevStep }: { prevStep: () => void }) {
     let isMounted = true;
   
     const fetchNotifies = async () => {
-      while (isMounted) {
-        try {
-          const newNotifys = await receveMessage();
+      if (!isMounted) return; // Выход из рекурсии
   
-          if (newNotifys?.body?.messageData?.textMessageData?.textMessage) {
-            state.addMessage({
-              chatId,
-              idMessage: newNotifys.body.idMessage,
-              isDeleted: false,
-              isEdited: false,
-              senderContactName: '',
-              senderId: newNotifys.body.idMessage,
-              senderName: newNotifys.body.senderData.senderName,
-              textMessage: newNotifys.body.messageData.textMessageData.textMessage,
-              timestamp: newNotifys.body.timestamp,
-              type: newNotifys.body.senderData.sender === '79234303369@c.us'
-                ? 'outgoing'
-                : 'incoming',
-            });
+      try {
+        const newNotifys = await receveMessage();
   
-            playNotificationSound();
-          }
-        } catch (error) {
-          console.error("Ошибка при получении сообщения:", error);
+        if (newNotifys?.body?.messageData?.textMessageData?.textMessage) {
+          state.addMessage({
+            chatId,
+            idMessage: newNotifys.body.idMessage,
+            isDeleted: false,
+            isEdited: false,
+            senderContactName: '',
+            senderId: newNotifys.body.idMessage,
+            senderName: newNotifys.body.senderData.senderName,
+            textMessage: newNotifys.body.messageData.textMessageData.textMessage,
+            timestamp: newNotifys.body.timestamp,
+            type: newNotifys.body.senderData.sender === '79234303369@c.us'
+              ? 'outgoing'
+              : 'incoming',
+          });
+  
+          playNotificationSound();
         }
-  
-        // ✅ Ждём 1 секунду перед следующим запросом
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+      } catch (error) {
+        console.error('Ошибка при получении сообщения:', error);
       }
+  
+      // Делаем паузу перед следующим запросом
+      setTimeout(() => {
+        if (isMounted) fetchNotifies(); // Проверяем isMounted перед вызовом рекурсии
+      }, 1100);
     };
   
     fetchNotifies();
   
     return () => {
-      isMounted = false;
+      isMounted = false; // Условие выхода из рекурсии
     };
   }, [chatId, playNotificationSound]);
+  
 
   // Плавное появление сообщений
   useEffect(() => {
@@ -168,10 +170,10 @@ export default function Chat({ prevStep }: { prevStep: () => void }) {
           placeholder="Введите сообщение..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend(message)}
         />
         <Button
-          onClick={handleSend}
+          onClick={() => handleSend(message)}
           className="rounded-full bg-green-600 text-white p-3 hover:bg-green-700">
           <PaperPlaneIcon className="w-5 h-5" />
         </Button>

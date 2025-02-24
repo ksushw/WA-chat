@@ -9,30 +9,37 @@ export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
       currentChatPhone: null,
-      messages: {}, // Сообщения группируются по номерам телефонов
-
-      // Устанавливаем текущий чат по номеру телефона
+      messages: {}, 
       setCurrentChat: (phone) => set({ currentChatPhone: phone }),
 
       setMessages: (phone, newMessages) =>
         set((state) => ({
           messages: {
             ...state.messages,
-            [phone]: newMessages, // Полностью заменяем сообщения
+            [phone]: newMessages,
           },
         })),
 
-      addMessage: (message) => {
-        const phone = get().currentChatPhone;
-        if (!phone) return; 
-
-        set((state) => ({
-          messages: {
-            ...state.messages,
-            [phone]: [...(state.messages[phone] || []), message], 
-          },
-        }));
-      },
+        addMessage: (message) => {
+          const phone = get().currentChatPhone;
+          if (!phone) return;
+        
+          set((state) => {
+            const existingMessages = state.messages[phone] || [];
+        
+            // Проверяем, есть ли уже сообщение с таким idMessage
+            const isDuplicate = existingMessages.some((msg) => msg.idMessage === message.idMessage);
+            if (isDuplicate) return state; // Если дубликат найден, ничего не меняем
+        
+            return {
+              messages: {
+                ...state.messages,
+                [phone]: [...existingMessages, message], // Добавляем только уникальные
+              },
+            };
+          });
+        },
+        
 
       deleteMessage: (idMessage) => {
         const phone = get().currentChatPhone;
