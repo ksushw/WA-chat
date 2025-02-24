@@ -1,13 +1,15 @@
 import type { NextConfig } from "next";
+const isProd = process.env.NODE_ENV === 'production';
 
 const nextConfig: NextConfig = {
-  output: 'export', 
+  output: isProd ? 'export' : undefined, 
   images: {
     unoptimized: true, 
   },
   distDir: 'out',
-  basePath: '/WA-chat', 
-  assetPrefix: '/WA-chat/',
+  basePath: isProd ? "/WA-chat" : "",
+  assetPrefix: isProd ? "/WA-chat" : "",
+  trailingSlash: true,
 };
 
 export default nextConfig;

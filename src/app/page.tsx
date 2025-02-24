@@ -1,36 +1,33 @@
-"use client";
-// import {  useForm } from "react-hook-form"
+'use client';
 
-import { useState } from "react";
-// import AuthPage from "@/components/AuthPage";
-import AuthPage from "@/components/blocks/Auth";
-import  Chat  from "@/components/blocks/Chat";
+import { useEffect, useState } from 'react';
+
+import AuthPage from '@/components/blocks/Auth';
+import Contact from '@/components/blocks/Contact';
+import Chat from '@/components/blocks/Chat';
+import { getCookie } from 'cookies-next';
 
 
 export default function Home() {
+  const idInstance = getCookie('idInstance');
+  const apiToken = getCookie('apiToken');
 
-  // const form = useForm({
-  //   defaultValues: { idInstance: "" },
-  // });
+  const [step, setStep] = useState<'login' | 'contact' | 'chat'>('login');
+  
 
-  // const onSubmit = (data: any) => {
-  //   // console.log("Form Data:", data);
-  // };
-  console.log('parentRerender');
-
-  const [step, setStep] = useState<"login" | "contact" | "chat">("login");
+  useEffect(() => {
+    if (idInstance && apiToken) {
+      setStep('contact');
+    }
+  }, []);
 
   return (
-    <div className="h-[100%] p-2 s:p-10 font-[family-name:var(--font-geist-sans)] bg-neutral-300" >
+    <div className="h-[100%] p-2 s:p-10 font-[family-name:var(--font-geist-sans)] bg-neutral-300">
       <main className="flex flex-col w-[100%] h-[100%] justify-center   items-center">
-      {step === "login" && <AuthPage nextStep={() => setStep("chat")} />}
-        {/* {step === "contact" && <ContactPage nextStep={() => setStep("chat")} />} */}
-        {step === "chat" && <Chat />}
+        {step === 'login' && <AuthPage nextStep={() => setStep('contact')} />}
+        {step === 'contact' && <Contact nextStep={() => setStep('chat')} prevStep={() => setStep('login')} />}
+        {step === 'chat' && <Chat prevStep={() => setStep('contact')}/>}
       </main>
-      
     </div>
   );
 }
-
-
-

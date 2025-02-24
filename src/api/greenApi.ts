@@ -1,17 +1,22 @@
-import { ReceiveMessageResponse, ChatMessage } from "@/types/greenApi";
+import { ReceiveMessageResponse, ChatMessage, SentMessageResponse } from "@/types/greenApi";
 import axios from "axios";
+import {  getCookie } from 'cookies-next';
 
 const API_URL = "https://7105.api.greenapi.com";
 
-export async function sendMessage(instanceId: string, apiToken: string, chatId: string, text: string) {
-  return axios.post<ReceiveMessageResponse>(`${API_URL}/waInstance${instanceId}/sendMessage/${apiToken}`, {
+const getInstanceId = () => String(getCookie('idInstance')) || '';
+const getApiToken = () => String(getCookie('apiToken')) || '';
+
+export async function sendMessage( chatId: string, text: string) {
+  const responce = await axios.post<SentMessageResponse>(`${API_URL}/waInstance${getInstanceId()}/sendMessage/${getApiToken()}`, {
     chatId,
     message: text,
   });
+  return responce.data.idMessage
 }
 
 export async function deleteMessage(
-    instanceId: string,
+    instanceId: string | undefined,
     apiToken: string,
     receiptId: number
   ): Promise<boolean> {
@@ -27,31 +32,30 @@ export async function deleteMessage(
     }
 }
 
-export async function receveMessage(instanceId: string, apiToken: string): Promise<ReceiveMessageResponse | null> {
+export async function receveMessage(): Promise<ReceiveMessageResponse | null> {
     try {
       const response = await axios.get<ReceiveMessageResponse>(
-        `${API_URL}/waInstance${instanceId}/receiveNotification/${apiToken}?receiveTimeout=10`
+        `${API_URL}/waInstance${getInstanceId()}/receiveNotification/${getApiToken()}?receiveTimeout=10`
       );
   
       if (response?.data?.receiptId) {
-        await deleteMessage(instanceId, apiToken, response.data.receiptId);
+        await deleteMessage(getInstanceId(), getApiToken(), response.data.receiptId);
       }
   
       return response.data || null;
     } catch (error) {
       console.error("Ошибка при получении сообщения:", error);
       return null;
-    }
+  }
+
   }
 
 export async function getMessages(
-    instanceId: string,
-    apiToken: string,
     chatId: string
   ): Promise<ChatMessage[] | []> {
     try {
       const response = await axios.post<ChatMessage[]>(
-        `${API_URL}/waInstance${instanceId}/getChatHistory/${apiToken}`, {
+        `${API_URL}/waInstance${getInstanceId()}/getChatHistory/${getApiToken()}`, {
             chatId,
             "count": 20
         }
