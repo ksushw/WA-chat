@@ -74,11 +74,12 @@ export default function Chat({ prevStep }: { prevStep: () => void }) {
 
   useEffect(() => {
     let isMounted = true;
-
+  
     const fetchNotifies = async () => {
       while (isMounted) {
         try {
           const newNotifys = await receveMessage();
+  
           if (newNotifys?.body?.messageData?.textMessageData?.textMessage) {
             state.addMessage({
               chatId,
@@ -88,28 +89,29 @@ export default function Chat({ prevStep }: { prevStep: () => void }) {
               senderContactName: '',
               senderId: newNotifys.body.idMessage,
               senderName: newNotifys.body.senderData.senderName,
-              textMessage:
-                newNotifys.body.messageData.textMessageData.textMessage,
+              textMessage: newNotifys.body.messageData.textMessageData.textMessage,
               timestamp: newNotifys.body.timestamp,
-              type:
-                newNotifys.body.senderData.sender === '79234303369@c.us'
-                  ? 'outgoing'
-                  : 'incoming',
+              type: newNotifys.body.senderData.sender === '79234303369@c.us'
+                ? 'outgoing'
+                : 'incoming',
             });
+  
             playNotificationSound();
           }
         } catch (error) {
-          console.error('Ошибка при получении сообщения:', error);
+          console.error("Ошибка при получении сообщения:", error);
         }
+  
+        // ✅ Ждём 1 секунду перед следующим запросом
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     };
-
+  
     fetchNotifies();
-
+  
     return () => {
       isMounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId, playNotificationSound]);
 
   // Плавное появление сообщений
